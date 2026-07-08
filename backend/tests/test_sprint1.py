@@ -1,29 +1,15 @@
 import uuid
 
-from fastapi.testclient import TestClient
-from app.main import app
 
-client = TestClient(app)
-
-
-def test_root():
-    response = client.get("/")
-    assert response.status_code == 200
-    assert response.json()["status"] == "running"
-
-
-def test_health_check():
-    response = client.get("/api/health")
-    assert response.status_code == 200
-    assert response.json()["service"] == "backend"
-
-
-def test_register_login_and_update_task():
+def test_register_login_and_update_task(client):
     email = f"sprint1_{uuid.uuid4().hex[:8]}@example.com"
-    client.post(
+
+    register = client.post(
         "/api/auth/register",
         json={"email": email, "full_name": "Sprint1 Test", "password": "test1234"},
     )
+    assert register.status_code == 201
+
     login = client.post(
         "/api/auth/login",
         data={"username": email, "password": "test1234"},

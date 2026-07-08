@@ -69,6 +69,10 @@ def create_session(db: Session, user: User, data: SessionCreate) -> WorkSession:
 
     db.commit()
     db.refresh(session)
+
+    from app.services.aria_service import send_welcome
+    send_welcome(db, session)
+
     return session
 
 

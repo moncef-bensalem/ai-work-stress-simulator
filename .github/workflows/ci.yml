@@ -35,6 +35,13 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install -r requirements.txt
+      - name: Wait for PostgreSQL
+        run: |
+          for i in $(seq 1 30); do
+            python -c "import psycopg2; psycopg2.connect('$DATABASE_URL')" && exit 0
+            sleep 1
+          done
+          exit 1
       - run: pytest -v
 
   frontend:

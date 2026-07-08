@@ -38,4 +38,12 @@ def update_task(db: Session, task_id: str, user: User, data: TaskUpdate) -> Task
 
     db.commit()
     db.refresh(task)
+
+    from app.models.session import WorkSession
+    from app.services.fsm_service import update_session_phase
+
+    work_session = db.query(WorkSession).filter(WorkSession.id == task.session_id).first()
+    if work_session:
+        update_session_phase(db, work_session)
+
     return task
