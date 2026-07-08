@@ -45,14 +45,9 @@ ai-work-stress-simulator/
 cd backend
 python -m venv venv
 venv\Scripts\activate        # Windows
-# source venv/bin/activate   # Linux / macOS
-pip install -r requirements-minimal.txt   # Sprint 0
-# pip install -r requirements.txt         # Stack complète (Sprint 1+)
+pip install -r requirements.txt
 python -m uvicorn app.main:app --reload --port 8000
 ```
-
-API disponible sur : http://localhost:8000  
-Documentation Swagger : http://localhost:8000/docs
 
 ### 2. Frontend
 
@@ -62,7 +57,7 @@ npm install
 npm run dev
 ```
 
-Application disponible sur : http://localhost:5173
+Application : http://localhost:5173
 
 ## Démarrage avec Docker
 
@@ -74,8 +69,29 @@ docker compose up --build
 |---------|-----|
 | Frontend | http://localhost:5173 |
 | Backend API | http://localhost:8000 |
+| Swagger docs | http://localhost:8000/docs |
 | PostgreSQL | localhost:5432 |
 | Redis | localhost:6379 |
+
+## Parcours utilisateur (Sprint 1)
+
+1. S'inscrire / se connecter (`/register`, `/login`)
+2. Choisir un mode ARIA et démarrer une session
+3. Gérer les 5 tâches : drag & drop, terminer, déléguer
+4. Déclarer son niveau de stress via le slider
+
+## API principale
+
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| POST | `/api/auth/register` | Inscription |
+| POST | `/api/auth/login` | Connexion JWT |
+| POST | `/api/auth/refresh` | Rafraîchir le token |
+| GET | `/api/auth/me` | Profil utilisateur |
+| POST | `/api/sessions` | Démarrer une session |
+| GET | `/api/sessions/{id}/tasks` | Liste des tâches |
+| PUT | `/api/tasks/{id}` | Mettre à jour une tâche |
+| POST | `/api/sessions/{id}/stress` | Enregistrer le stress |
 
 ## Tests
 
