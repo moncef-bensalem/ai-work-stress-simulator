@@ -1,3 +1,5 @@
+import type { DraggableSyntheticListeners } from '@dnd-kit/core'
+
 const CATEGORY_COLORS: Record<string, string> = {
   validation: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
   tri: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
@@ -30,31 +32,46 @@ interface TaskCardProps {
   }
   onComplete: (id: string) => void
   onDelegate: (id: string) => void
+  dragHandleListeners?: DraggableSyntheticListeners
 }
 
-export default function TaskCard({ task, onComplete, onDelegate }: TaskCardProps) {
+export default function TaskCard({ task, onComplete, onDelegate, dragHandleListeners }: TaskCardProps) {
   const done = task.status === 'completed' || task.status === 'delegated'
   const colorClass = CATEGORY_COLORS[task.category] ?? 'bg-slate-500/20 text-slate-300 border-slate-500/30'
 
   return (
     <div className={`rounded-xl border border-slate-700 bg-slate-800/50 p-4 ${done ? 'opacity-60' : ''}`}>
-      <div className="flex items-start justify-between gap-2 mb-2">
-        <span className={`text-xs px-2 py-0.5 rounded-full border ${colorClass}`}>
-          {task.category}
-        </span>
-        <Countdown deadline={task.deadline} />
+      <div className="flex items-start gap-2 mb-2">
+        {!done && dragHandleListeners && (
+          <button
+            type="button"
+            className="mt-0.5 cursor-grab active:cursor-grabbing text-slate-500 hover:text-slate-300 px-1 touch-none"
+            aria-label="Glisser pour réorganiser"
+            {...dragHandleListeners}
+          >
+            ⠿
+          </button>
+        )}
+        <div className="flex flex-1 items-start justify-between gap-2 min-w-0">
+          <span className={`text-xs px-2 py-0.5 rounded-full border shrink-0 ${colorClass}`}>
+            {task.category}
+          </span>
+          <Countdown deadline={task.deadline} />
+        </div>
       </div>
       <h3 className={`font-medium text-white mb-1 ${done ? 'line-through' : ''}`}>{task.title}</h3>
       <p className="text-sm text-slate-400 mb-4">{task.description}</p>
       {!done && (
         <div className="flex gap-2">
           <button
+            type="button"
             onClick={() => onComplete(task.id)}
             className="flex-1 py-2 text-sm rounded-lg bg-emerald-600/80 hover:bg-emerald-600 text-white"
           >
             Terminer
           </button>
           <button
+            type="button"
             onClick={() => onDelegate(task.id)}
             className="flex-1 py-2 text-sm rounded-lg bg-slate-700 hover:bg-slate-600 text-white"
           >

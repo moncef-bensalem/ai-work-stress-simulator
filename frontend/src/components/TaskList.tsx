@@ -27,15 +27,23 @@ function SortableTask({
   onComplete: (id: string) => void
   onDelegate: (id: string) => void
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: task.id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: task.id,
+  })
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    opacity: isDragging ? 0.85 : 1,
   }
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <TaskCard task={task} onComplete={onComplete} onDelegate={onDelegate} />
+    <div ref={setNodeRef} style={style} {...attributes}>
+      <TaskCard
+        task={task}
+        onComplete={onComplete}
+        onDelegate={onDelegate}
+        dragHandleListeners={listeners}
+      />
     </div>
   )
 }
@@ -49,7 +57,7 @@ interface TaskListProps {
 
 export default function TaskList({ tasks, onReorder, onComplete, onDelegate }: TaskListProps) {
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   )
 
